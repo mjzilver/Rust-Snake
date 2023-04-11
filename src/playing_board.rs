@@ -1,16 +1,24 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+use std::{cell::Cell, vec};
+
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
 
 #[derive(Clone)]
 pub struct Board {
-    pub data: Vec<Vec<Cell>>,
+    pub data: Vec<Vec<(CellState, Color)>>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CellState {
+    Active,
+    Inactive,
+    Empty,
+}
 #[derive(Clone, Debug)]
-pub enum Cell {
+pub enum Color {
     Blue,
     Red,
     Yellow,
@@ -31,32 +39,45 @@ pub enum Direction {
 
 impl Board {
     pub fn init() -> Board {
-        let data = vec![vec![Cell::Black; WIDTH]; HEIGHT];
+        let data = vec![vec![(CellState::Empty, Color::Black); WIDTH]; HEIGHT];
         Board { data }
     }
 
     pub fn print(&self) {
-        self.data.iter().for_each(|row| {
-            row.iter().for_each(|cell| match cell {
-                Cell::Blue => print!("🟦"),
-                Cell::Red => print!("🟥"),
-                Cell::Yellow => print!("🟨"),
-                Cell::Purple => print!("🟪"),
-                Cell::Orange => print!("🟧"),
-                Cell::Brown => print!("🟫"),
-                Cell::Black => print!("⬛"),
-                Cell::White => print!("⬜"),
-                Cell::Green => print!("🟩"),
-            });
-            println!();
-        });
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                match self.data[y][x].0 {
+                    CellState::Inactive => print!("🟦"),
+                    CellState::Active => print!("🟥"),
+                    CellState::Empty => print!("⬛"),
+                };
+            }
+            println!("{}", y);
+        }
+        println!("{:?}", [0..WIDTH]);
     }
 
     pub fn update(&mut self) {
-        self.data[0][WIDTH / 2] = Cell::Purple;
-        self.data[0][WIDTH / 2 - 1] = Cell::Purple;
-        self.data[1][WIDTH / 2] = Cell::Purple;
-        self.data[1][WIDTH / 2 - 1] = Cell::Purple;
+        for y in 0..HEIGHT {
+            for x in 0..WIDTH {
+                if self.data[y][x].0 == CellState::Active {
+                    println!("{}, {} is active", y, x);
+                    if y + 1 < HEIGHT {
+                        if self.data[y + 1][x].0 == CellState::Empty {
+                            self.data[y + 1][x].0 = CellState::Active;
+                            self.data[y][x].0 = CellState::Empty;
+                        } else {
+                            self.data[y][x].0 = CellState::Inactive;
+                        }
+                    }
+                }
+            }
+        }
+
+        self.data[0][WIDTH / 2] = (CellState::Active, Color::Purple);
+        self.data[0][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
+        self.data[1][WIDTH / 2] = (CellState::Active, Color::Purple);
+        self.data[1][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
     }
 
     pub fn handle_input(&self, dir: Direction) {
