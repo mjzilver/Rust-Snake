@@ -20,7 +20,5 @@ pub fn start_loop() {
             'd' => playing_board.handle_input(playing_board::Direction::Right),
             _ => println!("You entered a wrong value!"),
         }
-
-        playing_board.update();
     }
 }

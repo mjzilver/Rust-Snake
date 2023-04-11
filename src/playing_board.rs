@@ -1,91 +1,71 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use std::{cell::Cell, vec};
-
-const WIDTH: usize = 10;
-const HEIGHT: usize = 20;
+const WIDTH: usize = 30;
+const HEIGHT: usize = 10;
 
 #[derive(Clone)]
-pub struct Board {
-    pub data: Vec<Vec<(CellState, Color)>>,
+pub struct Board<'a> {
+    pub data: Vec<Vec<Cell>>,
+    pub dir: Direction,
+    pub snake: &'a Cell,
+    pub score: i16,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum CellState {
-    Active,
-    Inactive,
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Cell {
     Empty,
+    Food,
+    Snake,
 }
-#[derive(Clone, Debug)]
-pub enum Color {
-    Blue,
-    Red,
-    Yellow,
-    Purple,
-    Orange,
-    Brown,
-    Black,
-    White,
-    Green,
-}
-
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
     Up,
     Down,
     Left,
     Right,
+    None,
 }
 
-impl Board {
-    pub fn init() -> Board {
-        let data = vec![vec![(CellState::Empty, Color::Black); WIDTH]; HEIGHT];
-        Board { data }
+impl Board<'_> {
+    pub fn init() -> &'static Board<'static> {
+        let mut data = vec![vec![Cell::Empty; WIDTH]; HEIGHT];
+        data[5][5] = Cell::Snake;
+        data[5][10] = Cell::Food;
+
+        let board = Board {
+            data: data,
+            dir: Direction::None,
+            snake: &data[5][5],
+            score: 0,
+        };
+
+        return &board;
     }
 
     pub fn print(&self) {
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
-                match self.data[y][x].0 {
-                    CellState::Inactive => print!("🟦"),
-                    CellState::Active => print!("🟥"),
-                    CellState::Empty => print!("⬛"),
+                match self.data[y][x] {
+                    Cell::Snake => print!("🐍"),
+                    Cell::Food => print!("🍎"),
+                    Cell::Empty => print!("⬛"),
                 };
             }
             println!("{}", y);
         }
-        println!("{:?}", [0..WIDTH]);
+        println!("{:?}", 0..WIDTH);
     }
 
-    pub fn update(&mut self) {
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
-                if self.data[y][x].0 == CellState::Active {
-                    println!("{}, {} is active", y, x);
-                    if y + 1 < HEIGHT {
-                        if self.data[y + 1][x].0 == CellState::Empty {
-                            self.data[y + 1][x].0 = CellState::Active;
-                            self.data[y][x].0 = CellState::Empty;
-                        } else {
-                            self.data[y][x].0 = CellState::Inactive;
-                        }
-                    }
-                }
-            }
-        }
+    pub fn handle_input(&mut self, dir: Direction) {
+        self.dir = dir;
 
-        self.data[0][WIDTH / 2] = (CellState::Active, Color::Purple);
-        self.data[0][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
-        self.data[1][WIDTH / 2] = (CellState::Active, Color::Purple);
-        self.data[1][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
-    }
-
-    pub fn handle_input(&self, dir: Direction) {
-        match dir {
-            Direction::Up => println!("Moving up!"),
-            Direction::Down => println!("Moving down!"),
-            Direction::Left => println!("Moving left!"),
-            Direction::Right => println!("Moving right!"),
+        match self.dir {
+            Direction::Up => {}
+            Direction::Down => {}
+            Direction::Left => {}
+            Direction::Right => {}
+            Direction::None => {}
         }
     }
 }
