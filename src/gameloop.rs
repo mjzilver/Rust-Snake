@@ -1,17 +1,17 @@
-use crate::playing_board;
-use crate::playing_board::Cell;
-use crate::snake;
+use crate::playing_board::{self, Board};
 use crate::snake::Direction;
+use crate::{draw, snake};
 
 pub fn start_loop() {
     let mut game_is_running = true;
 
     // Initialize board instance
-    let mut playing_board = playing_board::Board::init();
-    let mut start: &mut Cell = &mut playing_board.data[5][5];
-    let mut snake = snake::Snake::new(start, Direction::None);
+    let mut playing_board: Board = playing_board::Board::init();
+    let mut snake = snake::Snake::new((5, 5), Direction::None);
 
     while game_is_running {
+        snake.update(&mut playing_board);
+
         playing_board.print();
 
         let mut input = String::new();
@@ -19,10 +19,10 @@ pub fn start_loop() {
 
         match input.chars().next().unwrap() {
             'x' => game_is_running = false,
-            'w' => {}
-            'a' => {}
-            's' => {}
-            'd' => {}
+            'w' => snake.movement(Direction::Up),
+            'a' => snake.movement(Direction::Left),
+            's' => snake.movement(Direction::Down),
+            'd' => snake.movement(Direction::Right),
             _ => println!("You entered a wrong value!"),
         }
     }

@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-const WIDTH: usize = 30;
-const HEIGHT: usize = 10;
+pub const WIDTH: usize = 30;
+pub const HEIGHT: usize = 10;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Board {
     pub data: Vec<Vec<Cell>>,
 }

@@ -1,4 +1,4 @@
-use crate::playing_board::Cell;
+use crate::playing_board::{self, Board, Cell};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -9,17 +9,15 @@ pub enum Direction {
     None,
 }
 #[derive(Debug)]
-pub struct Snake<'a> {
-    body: Vec<&'a mut Cell>,
+pub struct Snake {
+    body: Vec<(usize, usize)>,
     direction: Direction,
     digesting: bool,
 }
 
-impl<'a> Snake<'a> {
-    pub fn new(mut start: &'a mut Cell, direction: Direction) -> Self {
-        *start = Cell::Snake;
-
-        let mut body: Vec<&mut Cell> = vec![];
+impl Snake {
+    pub fn new(start: (usize, usize), direction: Direction) -> Self {
+        let mut body: Vec<(usize, usize)> = vec![];
         body.push(start);
 
         return Self {
@@ -29,5 +27,25 @@ impl<'a> Snake<'a> {
         };
     }
 
-    pub fn update(&mut self) {}
+    pub fn update(&mut self, board: &mut Board) {
+        for i in (0..self.body.len()).rev() {
+            let mut new_coord = &mut self.body[i];
+
+            board.data[new_coord.0][new_coord.1] = Cell::Empty;
+
+            match self.direction {
+                Direction::Up => new_coord.0 -= 1,
+                Direction::Down => new_coord.0 += 1,
+                Direction::Left => new_coord.1 -= 1,
+                Direction::Right => new_coord.1 += 1,
+                Direction::None => {}
+            }
+
+            board.data[new_coord.0][new_coord.1] = Cell::Snake;
+        }
+    }
+
+    pub fn movement(&mut self, dir: Direction) {
+        self.direction = dir;
+    }
 }
