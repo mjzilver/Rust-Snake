@@ -4,43 +4,22 @@
 const WIDTH: usize = 30;
 const HEIGHT: usize = 10;
 
-#[derive(Clone)]
-pub struct Board<'a> {
+pub struct Board {
     pub data: Vec<Vec<Cell>>,
-    pub dir: Direction,
-    pub snake: &'a Cell,
-    pub score: i16,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Cell {
     Empty,
     Food,
     Snake,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-    None,
-}
 
-impl Board<'_> {
-    pub fn init() -> &'static Board<'static> {
-        let mut data = vec![vec![Cell::Empty; WIDTH]; HEIGHT];
-        data[5][5] = Cell::Snake;
-        data[5][10] = Cell::Food;
+impl Board {
+    pub fn init() -> Board {
+        let data = vec![vec![Cell::Empty; WIDTH]; HEIGHT];
 
-        let board = Board {
-            data: data,
-            dir: Direction::None,
-            snake: &data[5][5],
-            score: 0,
-        };
-
-        return &board;
+        return Board { data };
     }
 
     pub fn print(&self) {
@@ -53,19 +32,6 @@ impl Board<'_> {
                 };
             }
             println!("{}", y);
-        }
-        println!("{:?}", 0..WIDTH);
-    }
-
-    pub fn handle_input(&mut self, dir: Direction) {
-        self.dir = dir;
-
-        match self.dir {
-            Direction::Up => {}
-            Direction::Down => {}
-            Direction::Left => {}
-            Direction::Right => {}
-            Direction::None => {}
         }
     }
 }
