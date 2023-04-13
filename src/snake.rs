@@ -28,7 +28,7 @@ impl Snake {
         };
     }
 
-    pub fn update(&mut self, board: &mut Board) {
+    pub fn update(&mut self, board: &mut Board) -> bool {
         let mut old_coord = self.body[self.body.len() - 1].clone();
         let mut new_coord = &mut self.body.remove(self.body.len() - 1);
 
@@ -54,6 +54,8 @@ impl Snake {
 
         if board.data[new_coord.0][new_coord.1] == Cell::Food {
             self.digesting = true;
+        } else if board.data[new_coord.0][new_coord.1] == Cell::Snake {
+            return false;
         }
 
         if !self.digesting {
@@ -71,9 +73,33 @@ impl Snake {
             board.data[self.body[i].0][self.body[i].1] = Cell::Empty;
             (self.body[i], old_coord) = (old_coord, self.body[i]);
         }
+        return true;
     }
 
     pub fn movement(&mut self, dir: Direction) {
+        match dir {
+            Direction::Up => {
+                if self.direction == Direction::Down {
+                    return;
+                }
+            }
+            Direction::Down => {
+                if self.direction == Direction::Up {
+                    return;
+                }
+            }
+            Direction::Left => {
+                if self.direction == Direction::Right {
+                    return;
+                }
+            }
+            Direction::Right => {
+                if self.direction == Direction::Left {
+                    return;
+                }
+            }
+        }
+
         self.direction = dir;
     }
 }

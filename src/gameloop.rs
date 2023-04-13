@@ -45,7 +45,11 @@ pub fn start_loop() {
             waiting_time += arg.dt;
 
             if waiting_time > MOVING_PERIOD {
-                snake.update(&mut playing_board);
+                if !snake.update(&mut playing_board) {
+                    playing_board = playing_board::Board::init();
+                    snake = snake::Snake::new((5, 5), Direction::Down);
+                }
+
                 food.update(&mut playing_board);
                 waiting_time = 0.0;
             }
