@@ -1,6 +1,6 @@
 use crate::playing_board::{self, Board};
+use crate::snake;
 use crate::snake::Direction;
-use crate::{draw, snake};
 
 pub fn start_loop() {
     let mut game_is_running = true;
