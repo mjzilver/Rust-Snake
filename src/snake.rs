@@ -6,7 +6,6 @@ pub enum Direction {
     Down,
     Left,
     Right,
-    None,
 }
 #[derive(Debug)]
 pub struct Snake {
@@ -30,31 +29,34 @@ impl Snake {
     }
 
     pub fn update(&mut self, board: &mut Board) {
-        for i in (0..self.body.len()).rev() {
-            let old_coord = self.body[i].clone();
-            let mut new_coord = &mut self.body.remove(i);
+        let mut old_coord = self.body[self.body.len() - 1].clone();
+        let mut new_coord = &mut self.body.remove(self.body.len() - 1);
 
-            match self.direction {
-                Direction::Up => new_coord.0 -= 1,
-                Direction::Down => new_coord.0 += 1,
-                Direction::Left => new_coord.1 -= 1,
-                Direction::Right => new_coord.1 += 1,
-                Direction::None => {}
-            }
+        match self.direction {
+            Direction::Up => new_coord.0 -= 1,
+            Direction::Down => new_coord.0 += 1,
+            Direction::Left => new_coord.1 -= 1,
+            Direction::Right => new_coord.1 += 1,
+        }
 
-            if board.data[new_coord.0][new_coord.1] == Cell::Food {
-                self.digesting = true;
-            }
+        if board.data[new_coord.0][new_coord.1] == Cell::Food {
+            self.digesting = true;
+        }
 
-            if !self.digesting {
-                board.data[old_coord.0][old_coord.1] = Cell::Empty;
-            } else {
-                self.body.push(old_coord);
-                self.digesting = false;
-            }
+        if !self.digesting {
+            board.data[old_coord.0][old_coord.1] = Cell::Empty;
+        } else {
+            self.body.push(old_coord);
+            self.digesting = false;
+        }
 
-            board.data[new_coord.0][new_coord.1] = Cell::Snake;
-            self.body.push(*new_coord);
+        board.data[new_coord.0][new_coord.1] = Cell::Snake;
+        self.body.push(*new_coord);
+
+        for i in (0..self.body.len() - 1).rev() {
+            board.data[old_coord.0][old_coord.1] = Cell::Snake;
+            board.data[self.body[i].0][self.body[i].1] = Cell::Empty;
+            (self.body[i], old_coord) = (old_coord, self.body[i]);
         }
     }
 
