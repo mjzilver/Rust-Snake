@@ -1,4 +1,4 @@
-use crate::playing_board::{Board, Cell};
+use crate::playing_board::{self, Board, Cell};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -33,11 +33,24 @@ impl Snake {
         let mut new_coord = &mut self.body.remove(self.body.len() - 1);
 
         match self.direction {
-            Direction::Up => new_coord.0 -= 1,
+            Direction::Up => {
+                if new_coord.0 == 0 {
+                    new_coord.0 = playing_board::HEIGHT
+                }
+                new_coord.0 -= 1
+            }
             Direction::Down => new_coord.0 += 1,
-            Direction::Left => new_coord.1 -= 1,
+            Direction::Left => {
+                if new_coord.1 == 0 {
+                    new_coord.1 = playing_board::WIDTH
+                }
+                new_coord.1 -= 1
+            }
             Direction::Right => new_coord.1 += 1,
         }
+
+        new_coord.0 %= playing_board::HEIGHT;
+        new_coord.1 %= playing_board::WIDTH;
 
         if board.data[new_coord.0][new_coord.1] == Cell::Food {
             self.digesting = true;
