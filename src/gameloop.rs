@@ -9,8 +9,6 @@ const BACK_COLOR: Color = [0.5, 0.5, 0.5, 1.0];
 const MOVING_PERIOD: f64 = 0.1;
 
 pub fn start_loop() {
-    let game_is_running = true;
-
     let mut window: PistonWindow = WindowSettings::new(
         "Snake",
         (
@@ -26,7 +24,7 @@ pub fn start_loop() {
     // Initialize board instance
     let mut playing_board: Board = playing_board::Board::init();
     let mut snake = snake::Snake::new((5, 5), Direction::Down);
-    let food: Food = Food::new(&mut playing_board);
+    let mut food: Food = Food::new(&mut playing_board);
     let mut waiting_time: f64 = 0.0;
 
     while let Some(event) = window.next() {
@@ -48,6 +46,7 @@ pub fn start_loop() {
 
             if waiting_time > MOVING_PERIOD {
                 snake.update(&mut playing_board);
+                food.update(&mut playing_board);
                 waiting_time = 0.0;
             }
         });
