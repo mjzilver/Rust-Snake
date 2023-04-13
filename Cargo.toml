@@ -6,6 +6,7 @@ authors = ["Jari Zilverentant"]
 
 [dependencies]
 rand = "*"
+piston_window = "*"
 
 [[bin]]
 name = "tetris"

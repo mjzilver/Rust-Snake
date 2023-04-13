@@ -1,8 +1,13 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
+use piston_window::types::Color;
+use piston_window::Context;
+use piston_window::G2d;
 
 pub const WIDTH: usize = 30;
-pub const HEIGHT: usize = 10;
+pub const HEIGHT: usize = 30;
+const SNAKE_COLOR: Color = [0.00, 0.80, 0.00, 1.0];
+const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
+
+use crate::window::draw_block;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Board {
@@ -23,16 +28,15 @@ impl Board {
         return Board { data };
     }
 
-    pub fn print(&self) {
+    pub fn draw(&self, context: &Context, g2d: &mut G2d) {
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
                 match self.data[y][x] {
-                    Cell::Snake => print!("🐍"),
-                    Cell::Food => print!("🍎"),
-                    Cell::Empty => print!("⬛"),
+                    Cell::Snake => draw_block(SNAKE_COLOR, x as f64, y as f64, context, g2d),
+                    Cell::Food => draw_block(FOOD_COLOR, x as f64, y as f64, context, g2d),
+                    _ => {}
                 };
             }
-            println!("{}", y);
         }
     }
 }
