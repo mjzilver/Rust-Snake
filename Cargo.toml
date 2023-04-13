@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Jari Zilverentant"]
 
 [dependencies]
+rand = "*"
 
 [[bin]]
 name = "tetris"

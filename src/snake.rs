@@ -19,6 +19,8 @@ impl Snake {
     pub fn new(start: (usize, usize), direction: Direction) -> Self {
         let mut body: Vec<(usize, usize)> = vec![];
         body.push(start);
+        body.push((start.0 + 1, start.1));
+        body.push((start.0 + 2, start.1));
 
         return Self {
             body,
@@ -29,9 +31,8 @@ impl Snake {
 
     pub fn update(&mut self, board: &mut Board) {
         for i in (0..self.body.len()).rev() {
-            let mut new_coord = &mut self.body[i];
-
-            board.data[new_coord.0][new_coord.1] = Cell::Empty;
+            let old_coord = self.body[i].clone();
+            let mut new_coord = &mut self.body.remove(i);
 
             match self.direction {
                 Direction::Up => new_coord.0 -= 1,
@@ -41,7 +42,19 @@ impl Snake {
                 Direction::None => {}
             }
 
+            if board.data[new_coord.0][new_coord.1] == Cell::Food {
+                self.digesting = true;
+            }
+
+            if !self.digesting {
+                board.data[old_coord.0][old_coord.1] = Cell::Empty;
+            } else {
+                self.body.push(old_coord);
+                self.digesting = false;
+            }
+
             board.data[new_coord.0][new_coord.1] = Cell::Snake;
+            self.body.push(*new_coord);
         }
     }
 
