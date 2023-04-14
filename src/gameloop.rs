@@ -1,12 +1,13 @@
 use crate::food::Food;
 use crate::playing_board::{self, Board};
-use crate::snake::Direction;
+use crate::snake::{Direction, SnakeStatus};
 use crate::{snake, window};
 use piston_window::types::Color;
 use piston_window::*;
 
 const BACK_COLOR: Color = [0.5, 0.5, 0.5, 1.0];
 const MOVING_PERIOD: f64 = 0.1;
+const SNAKE_START: (usize, usize) = (5, 5);
 
 pub fn start_loop() {
     let mut window: PistonWindow = WindowSettings::new(
@@ -23,7 +24,7 @@ pub fn start_loop() {
 
     // Initialize board instance
     let mut playing_board: Board = playing_board::Board::init();
-    let mut snake = snake::Snake::new((5, 5), Direction::Down);
+    let mut snake = snake::Snake::new(SNAKE_START, Direction::Down);
     let mut food: Food = Food::new(&mut playing_board);
     let mut waiting_time: f64 = 0.0;
 
@@ -45,9 +46,9 @@ pub fn start_loop() {
             waiting_time += arg.dt;
 
             if waiting_time > MOVING_PERIOD {
-                if !snake.update(&mut playing_board) {
+                if snake.update(&mut playing_board) == SnakeStatus::Collision {
                     playing_board = playing_board::Board::init();
-                    snake = snake::Snake::new((5, 5), Direction::Down);
+                    snake = snake::Snake::new(SNAKE_START, Direction::Down);
                 }
 
                 food.update(&mut playing_board);

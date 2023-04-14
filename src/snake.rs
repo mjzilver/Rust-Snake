@@ -13,6 +13,11 @@ pub struct Snake {
     direction: Direction,
     digesting: bool,
 }
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum SnakeStatus {
+    Collision,
+    Moving,
+}
 
 impl Snake {
     pub fn new(start: (usize, usize), direction: Direction) -> Self {
@@ -28,9 +33,9 @@ impl Snake {
         };
     }
 
-    pub fn update(&mut self, board: &mut Board) -> bool {
-        let mut old_coord = self.body[self.body.len() - 1].clone();
-        let mut new_coord = &mut self.body.remove(self.body.len() - 1);
+    pub fn update(&mut self, board: &mut Board) -> SnakeStatus {
+        let mut old_coord = self.body.last().copied().unwrap();
+        let mut new_coord = &mut self.body.pop().unwrap();
 
         match self.direction {
             Direction::Up => {
@@ -55,7 +60,7 @@ impl Snake {
         if board.data[new_coord.0][new_coord.1] == Cell::Food {
             self.digesting = true;
         } else if board.data[new_coord.0][new_coord.1] == Cell::Snake {
-            return false;
+            return SnakeStatus::Collision;
         }
 
         if !self.digesting {
@@ -73,33 +78,16 @@ impl Snake {
             board.data[self.body[i].0][self.body[i].1] = Cell::Empty;
             (self.body[i], old_coord) = (old_coord, self.body[i]);
         }
-        return true;
+        return SnakeStatus::Moving;
     }
 
     pub fn movement(&mut self, dir: Direction) {
         match dir {
-            Direction::Up => {
-                if self.direction == Direction::Down {
-                    return;
-                }
-            }
-            Direction::Down => {
-                if self.direction == Direction::Up {
-                    return;
-                }
-            }
-            Direction::Left => {
-                if self.direction == Direction::Right {
-                    return;
-                }
-            }
-            Direction::Right => {
-                if self.direction == Direction::Left {
-                    return;
-                }
-            }
+            Direction::Up if self.direction != Direction::Down => self.direction = dir,
+            Direction::Down if self.direction != Direction::Up => self.direction = dir,
+            Direction::Left if self.direction != Direction::Right => self.direction = dir,
+            Direction::Right if self.direction != Direction::Left => self.direction = dir,
+            _ => {}
         }
-
-        self.direction = dir;
     }
 }
