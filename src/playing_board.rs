@@ -1,91 +1,42 @@
-#![allow(dead_code)]
-#![allow(unused_variables)]
+use piston_window::types::Color;
+use piston_window::Context;
+use piston_window::G2d;
 
-use std::{cell::Cell, vec};
+pub const WIDTH: usize = 30;
+pub const HEIGHT: usize = 30;
+const SNAKE_COLOR: Color = [0.00, 0.80, 0.00, 1.0];
+const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
 
-const WIDTH: usize = 10;
-const HEIGHT: usize = 20;
+use crate::window::draw_block;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Board {
-    pub data: Vec<Vec<(CellState, Color)>>,
+    pub data: Vec<Vec<Cell>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub enum CellState {
-    Active,
-    Inactive,
+pub enum Cell {
     Empty,
-}
-#[derive(Clone, Debug)]
-pub enum Color {
-    Blue,
-    Red,
-    Yellow,
-    Purple,
-    Orange,
-    Brown,
-    Black,
-    White,
-    Green,
-}
-
-pub enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
+    Food,
+    Snake,
 }
 
 impl Board {
     pub fn init() -> Board {
-        let data = vec![vec![(CellState::Empty, Color::Black); WIDTH]; HEIGHT];
-        Board { data }
+        let data = vec![vec![Cell::Empty; WIDTH]; HEIGHT];
+
+        return Board { data };
     }
 
-    pub fn print(&self) {
+    pub fn draw(&self, context: &Context, g2d: &mut G2d) {
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
-                match self.data[y][x].0 {
-                    CellState::Inactive => print!("🟦"),
-                    CellState::Active => print!("🟥"),
-                    CellState::Empty => print!("⬛"),
+                match self.data[y][x] {
+                    Cell::Snake => draw_block(SNAKE_COLOR, x as f64, y as f64, context, g2d),
+                    Cell::Food => draw_block(FOOD_COLOR, x as f64, y as f64, context, g2d),
+                    _ => {}
                 };
             }
-            println!("{}", y);
-        }
-        println!("{:?}", [0..WIDTH]);
-    }
-
-    pub fn update(&mut self) {
-        for y in 0..HEIGHT {
-            for x in 0..WIDTH {
-                if self.data[y][x].0 == CellState::Active {
-                    println!("{}, {} is active", y, x);
-                    if y + 1 < HEIGHT {
-                        if self.data[y + 1][x].0 == CellState::Empty {
-                            self.data[y + 1][x].0 = CellState::Active;
-                            self.data[y][x].0 = CellState::Empty;
-                        } else {
-                            self.data[y][x].0 = CellState::Inactive;
-                        }
-                    }
-                }
-            }
-        }
-
-        self.data[0][WIDTH / 2] = (CellState::Active, Color::Purple);
-        self.data[0][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
-        self.data[1][WIDTH / 2] = (CellState::Active, Color::Purple);
-        self.data[1][WIDTH / 2 - 1] = (CellState::Active, Color::Purple);
-    }
-
-    pub fn handle_input(&self, dir: Direction) {
-        match dir {
-            Direction::Up => println!("Moving up!"),
-            Direction::Down => println!("Moving down!"),
-            Direction::Left => println!("Moving left!"),
-            Direction::Right => println!("Moving right!"),
         }
     }
 }
