@@ -1,4 +1,4 @@
-use crate::playing_board::{self, Board, Cell};
+use crate::playing_board::{Board, Cell};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -12,6 +12,7 @@ pub struct Snake {
     body: Vec<(usize, usize)>,
     direction: Direction,
     digesting: bool,
+    pub status: SnakeStatus,
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SnakeStatus {
@@ -30,55 +31,46 @@ impl Snake {
             body,
             direction,
             digesting: false,
+            status: SnakeStatus::Moving,
         };
     }
 
-    pub fn update(&mut self, board: &mut Board) -> SnakeStatus {
+    pub fn update(&mut self, board: &mut Board) {
         let mut old_coord = self.body.last().copied().unwrap();
         let mut new_coord = &mut self.body.pop().unwrap();
 
         match self.direction {
-            Direction::Up => {
-                if new_coord.0 == 0 {
-                    new_coord.0 = playing_board::HEIGHT
-                }
-                new_coord.0 -= 1
-            }
+            Direction::Up => new_coord.0 -= 1,
             Direction::Down => new_coord.0 += 1,
-            Direction::Left => {
-                if new_coord.1 == 0 {
-                    new_coord.1 = playing_board::WIDTH
-                }
-                new_coord.1 -= 1
-            }
+            Direction::Left => new_coord.1 -= 1,
             Direction::Right => new_coord.1 += 1,
         }
 
-        new_coord.0 %= playing_board::HEIGHT;
-        new_coord.1 %= playing_board::WIDTH;
-
         if board.data[new_coord.0][new_coord.1] == Cell::Food {
             self.digesting = true;
-        } else if board.data[new_coord.0][new_coord.1] == Cell::Snake {
-            return SnakeStatus::Collision;
+        } else if board.data[new_coord.0][new_coord.1] == Cell::Snake
+            || board.data[new_coord.0][new_coord.1] == Cell::Wall
+        {
+            self.status = SnakeStatus::Collision;
         }
 
-        if !self.digesting {
-            board.data[old_coord.0][old_coord.1] = Cell::Empty;
-        } else {
-            self.body.push(old_coord);
-            self.digesting = false;
-        }
+        if self.status == SnakeStatus::Moving {
+            if !self.digesting {
+                board.data[old_coord.0][old_coord.1] = Cell::Empty;
+            } else {
+                self.body.push(old_coord);
+                self.digesting = false;
+            }
 
-        board.data[new_coord.0][new_coord.1] = Cell::Snake;
-        self.body.push(*new_coord);
+            board.data[new_coord.0][new_coord.1] = Cell::Snake;
+            self.body.push(*new_coord);
 
-        for i in (0..self.body.len() - 1).rev() {
-            board.data[old_coord.0][old_coord.1] = Cell::Snake;
-            board.data[self.body[i].0][self.body[i].1] = Cell::Empty;
-            (self.body[i], old_coord) = (old_coord, self.body[i]);
+            for i in (0..self.body.len() - 1).rev() {
+                board.data[old_coord.0][old_coord.1] = Cell::Snake;
+                board.data[self.body[i].0][self.body[i].1] = Cell::Empty;
+                (self.body[i], old_coord) = (old_coord, self.body[i]);
+            }
         }
-        return SnakeStatus::Moving;
     }
 
     pub fn movement(&mut self, dir: Direction) {

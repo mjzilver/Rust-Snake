@@ -46,12 +46,10 @@ pub fn start_loop() {
             waiting_time += arg.dt;
 
             if waiting_time > MOVING_PERIOD {
-                if snake.update(&mut playing_board) == SnakeStatus::Collision {
-                    playing_board = playing_board::Board::init();
-                    snake = snake::Snake::new(SNAKE_START, Direction::Down);
+                if snake.status == SnakeStatus::Moving {
+                    snake.update(&mut playing_board);
+                    food.update(&mut playing_board);
                 }
-
-                food.update(&mut playing_board);
                 waiting_time = 0.0;
             }
         });
