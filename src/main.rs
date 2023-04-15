@@ -5,5 +5,6 @@ mod snake;
 mod window;
 
 fn main() {
-    gameloop::start_loop()
+    let mut gameloop = gameloop::Game::new();
+    gameloop.start_loop()
 }

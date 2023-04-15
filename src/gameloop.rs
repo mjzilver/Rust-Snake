@@ -1,6 +1,6 @@
 use crate::food::Food;
 use crate::playing_board::{self, Board};
-use crate::snake::{Direction, SnakeStatus};
+use crate::snake::{Snake, Direction, SnakeStatus};
 use crate::{snake, window};
 use piston_window::types::Color;
 use piston_window::*;
@@ -9,49 +9,72 @@ const BACK_COLOR: Color = [0.5, 0.5, 0.5, 1.0];
 const MOVING_PERIOD: f64 = 0.1;
 const SNAKE_START: (usize, usize) = (5, 5);
 
-pub fn start_loop() {
-    let mut window: PistonWindow = WindowSettings::new(
-        "Snake",
-        (
-            (playing_board::WIDTH as f64) * window::BLOCK_SIZE,
-            (playing_board::HEIGHT as f64) * window::BLOCK_SIZE,
-        ),
-    )
-    .exit_on_esc(true)
-    .automatic_close(true)
-    .build()
-    .unwrap();
+pub struct Game {
+    board: Board,
+    snake: Snake,
+    food: Food,
+    waiting_time: f64
+}
 
-    // Initialize board instance
-    let mut playing_board: Board = playing_board::Board::init();
-    let mut snake = snake::Snake::new(SNAKE_START, Direction::Down);
-    let mut food: Food = Food::new();
-    let mut waiting_time: f64 = 0.0;
+impl Game {
+    pub fn new() -> Game {
+        return Game { board: playing_board::Board::new(), 
+            snake: snake::Snake::new(SNAKE_START, Direction::Down), 
+            food: Food::new(), 
+            waiting_time: 0.0 }
+    }
 
-    while let Some(event) = window.next() {
-        if let Some(Button::Keyboard(key)) = event.release_args() {
-            match key {
-                Key::W => snake.movement(Direction::Up),
-                Key::A => snake.movement(Direction::Left),
-                Key::S => snake.movement(Direction::Down),
-                Key::D => snake.movement(Direction::Right),
-                _ => {}
+    pub fn start_loop(&mut self) {
+        let mut window: PistonWindow = WindowSettings::new(
+            "Snake",
+            (
+                (playing_board::WIDTH as f64) * window::BLOCK_SIZE,
+                (playing_board::HEIGHT as f64) * window::BLOCK_SIZE,
+            ),
+        )
+        .exit_on_esc(true)
+        .automatic_close(true)
+        .build()
+        .unwrap();
+    
+        while let Some(event) = window.next() {
+            if let Some(Button::Keyboard(key)) = event.release_args() {
+                self.input(&key)
             }
+        
+            window.draw_2d(&event, |context, g2d, _| {
+                clear(BACK_COLOR, g2d);
+                self.board.draw(&context, g2d);
+            });
+            event.update(|arg| {
+                self.update(arg)
+            });
         }
-        window.draw_2d(&event, |c, g, _| {
-            clear(BACK_COLOR, g);
-            playing_board.draw(&c, g);
-        });
-        event.update(|arg| {
-            waiting_time += arg.dt;
+    }
 
-            if waiting_time > MOVING_PERIOD {
-                if snake.status == SnakeStatus::Moving {
-                    snake.update(&mut playing_board);
-                    food.update(&mut playing_board);
-                }
-                waiting_time = 0.0;
+    fn input (&mut self, key: &Key) {
+        match key {
+            Key::W => self.snake.movement(Direction::Up),
+            Key::A => self.snake.movement(Direction::Left),
+            Key::S => self.snake.movement(Direction::Down),
+            Key::D => self.snake.movement(Direction::Right),
+            _ => {}
+        }
+    }
+
+    fn update(&mut self, arg: &UpdateArgs) {
+        self.waiting_time += arg.dt;
+    
+        if self.waiting_time > MOVING_PERIOD {
+            if self.snake.status == SnakeStatus::Moving {
+                self.snake.update(&mut self.board);
+                self.food.update(&mut self.board);
+            } else {
+
             }
-        });
+            self.waiting_time = 0.0;
+        }
     }
 }
+
+

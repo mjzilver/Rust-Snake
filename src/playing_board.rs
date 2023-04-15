@@ -24,7 +24,7 @@ pub enum Cell {
 }
 
 impl Board {
-    pub fn init() -> Board {
+    pub fn new() -> Board {
         let mut data = vec![vec![Cell::Empty; WIDTH]; HEIGHT];
 
         for y in 0..HEIGHT {
