@@ -1,5 +1,5 @@
 use crate::food::Food;
-use crate::playing_board::{self, Board};
+use crate::board::{self, Board};
 use crate::snake::{Snake, Direction, SnakeStatus};
 use crate::{snake, window};
 use piston_window::types::Color;
@@ -8,6 +8,8 @@ use piston_window::*;
 const BACK_COLOR: Color = [0.5, 0.5, 0.5, 1.0];
 const MOVING_PERIOD: f64 = 0.1;
 const SNAKE_START: (usize, usize) = (5, 5);
+const SCREEN_WIDTH: f64 = (board::WIDTH as f64) * window::BLOCK_SIZE;
+const SCREEN_HEIGHT: f64 = (board::HEIGHT as f64) * window::BLOCK_SIZE;
 
 pub struct Game {
     board: Board,
@@ -18,7 +20,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        return Game { board: playing_board::Board::new(), 
+        return Game { board: board::Board::new(), 
             snake: snake::Snake::new(SNAKE_START, Direction::Down), 
             food: Food::new(), 
             waiting_time: 0.0 }
@@ -27,10 +29,7 @@ impl Game {
     pub fn start_loop(&mut self) {
         let mut window: PistonWindow = WindowSettings::new(
             "Snake",
-            (
-                (playing_board::WIDTH as f64) * window::BLOCK_SIZE,
-                (playing_board::HEIGHT as f64) * window::BLOCK_SIZE,
-            ),
+            ( SCREEN_WIDTH, SCREEN_HEIGHT ),
         )
         .exit_on_esc(true)
         .automatic_close(true)
@@ -45,6 +44,9 @@ impl Game {
             window.draw_2d(&event, |context, g2d, _| {
                 clear(BACK_COLOR, g2d);
                 self.board.draw(&context, g2d);
+                if self.snake.status == SnakeStatus::Collision {
+                    window::draw_rect([0.8, 0.0, 0.0, 0.5], 0.0, 0.0, SCREEN_WIDTH, SCREEN_HEIGHT , &context, g2d)
+                }
             });
             event.update(|arg| {
                 self.update(arg)
@@ -58,6 +60,7 @@ impl Game {
             Key::A => self.snake.movement(Direction::Left),
             Key::S => self.snake.movement(Direction::Down),
             Key::D => self.snake.movement(Direction::Right),
+            Key::R => {*self = Game::new()},
             _ => {}
         }
     }
@@ -70,7 +73,6 @@ impl Game {
                 self.snake.update(&mut self.board);
                 self.food.update(&mut self.board);
             } else {
-
             }
             self.waiting_time = 0.0;
         }

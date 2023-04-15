@@ -1,4 +1,4 @@
-use crate::playing_board::{Board, Cell};
+use crate::board::{Board, Cell};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
