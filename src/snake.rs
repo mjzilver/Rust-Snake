@@ -1,20 +1,19 @@
 use crate::board::{Board, Cell};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(PartialEq)]
 pub enum Direction {
     Up,
     Down,
     Left,
     Right,
 }
-#[derive(Debug)]
 pub struct Snake {
     body: Vec<(usize, usize)>,
     direction: Direction,
     digesting: bool,
     pub status: SnakeStatus,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(PartialEq)]
 pub enum SnakeStatus {
     Collision,
     Moving,
@@ -22,17 +21,18 @@ pub enum SnakeStatus {
 
 impl Snake {
     pub fn new(start: (usize, usize), direction: Direction) -> Self {
-        let mut body: Vec<(usize, usize)> = vec![];
-        body.push(start);
-        body.push((start.0 + 1, start.1));
-        body.push((start.0 + 2, start.1));
+        let body: Vec<(usize, usize)> = vec![
+            start,
+            (start.0 + 1, start.1),
+            (start.0 + 2, start.1),
+        ];
 
-        return Self {
+        Snake {
             body,
             direction,
             digesting: false,
             status: SnakeStatus::Moving,
-        };
+        }
     }
 
     pub fn update(&mut self, board: &mut Board) {

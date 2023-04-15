@@ -2,7 +2,6 @@ use rand::{rngs::ThreadRng, Rng};
 
 use crate::board::{self, Board, Cell};
 
-#[derive(Debug)]
 pub struct Food {
     location: (usize, usize),
     rng: ThreadRng,
@@ -12,10 +11,10 @@ impl Food {
     pub fn new() -> Self {
         let rng = rand::thread_rng();
 
-        return Food {
+        Food {
             location: (0, 0),
             rng,
-        };
+        }
     }
 
     pub fn update(&mut self, board: &mut Board) {
