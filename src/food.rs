@@ -11,10 +11,10 @@ impl Food {
     pub fn new() -> Self {
         let rng = rand::thread_rng();
 
-        return Food {
+        Food {
             location: (0, 0),
             rng,
-        };
+        }
     }
 
     pub fn update(&mut self, board: &mut Board) {

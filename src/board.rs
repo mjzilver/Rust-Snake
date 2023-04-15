@@ -35,7 +35,7 @@ impl Board {
             }
         }
 
-        return Board { data };
+        Board { data }
     }
 
     pub fn draw(&self, context: &Context, g2d: &mut G2d) {

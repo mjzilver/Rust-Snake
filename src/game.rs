@@ -20,7 +20,7 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        return Game { board: board::Board::new(), 
+        Game { board: board::Board::new(), 
             snake: snake::Snake::new(SNAKE_START, Direction::Down), 
             food: Food::new(), 
             waiting_time: 0.0 }
