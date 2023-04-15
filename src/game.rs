@@ -34,7 +34,7 @@ impl Game {
         .exit_on_esc(true)
         .automatic_close(true)
         .build()
-        .unwrap();
+        .expect("Window failed to load");
     
         while let Some(event) = window.next() {
             if let Some(Button::Keyboard(key)) = event.release_args() {
@@ -72,8 +72,7 @@ impl Game {
             if self.snake.status == SnakeStatus::Moving {
                 self.snake.update(&mut self.board);
                 self.food.update(&mut self.board);
-            } else {
-            }
+            } 
             self.waiting_time = 0.0;
         }
     }

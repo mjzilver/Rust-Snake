@@ -2,7 +2,6 @@ use rand::{rngs::ThreadRng, Rng};
 
 use crate::board::{self, Board, Cell};
 
-#[derive(Debug)]
 pub struct Food {
     location: (usize, usize),
     rng: ThreadRng,

@@ -1,20 +1,19 @@
 use crate::board::{Board, Cell};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(PartialEq)]
 pub enum Direction {
     Up,
     Down,
     Left,
     Right,
 }
-#[derive(Debug)]
 pub struct Snake {
     body: Vec<(usize, usize)>,
     direction: Direction,
     digesting: bool,
     pub status: SnakeStatus,
 }
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(PartialEq)]
 pub enum SnakeStatus {
     Collision,
     Moving,

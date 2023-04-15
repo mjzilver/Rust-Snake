@@ -2,7 +2,7 @@ use piston_window::types::Color;
 use piston_window::Context;
 use piston_window::G2d;
 
-use crate::{window};
+use crate::window;
 
 pub const WIDTH: usize = 30;
 pub const HEIGHT: usize = 30;
@@ -10,12 +10,12 @@ const SNAKE_COLOR: Color = [0.00, 0.80, 0.00, 1.0];
 const FOOD_COLOR: Color = [0.80, 0.00, 0.00, 1.0];
 const WALL_COLOR: Color = [0.00, 0.00, 0.00, 1.0];
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(PartialEq)]
 pub struct Board {
     pub data: Vec<Vec<Cell>>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq)]
 pub enum Cell {
     Empty,
     Food,
