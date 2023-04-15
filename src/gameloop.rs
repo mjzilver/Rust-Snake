@@ -25,7 +25,7 @@ pub fn start_loop() {
     // Initialize board instance
     let mut playing_board: Board = playing_board::Board::init();
     let mut snake = snake::Snake::new(SNAKE_START, Direction::Down);
-    let mut food: Food = Food::new(&mut playing_board);
+    let mut food: Food = Food::new();
     let mut waiting_time: f64 = 0.0;
 
     while let Some(event) = window.next() {
