@@ -1,9 +1,10 @@
 mod food;
-mod gameloop;
-mod playing_board;
+mod game;
+mod board;
 mod snake;
 mod window;
 
 fn main() {
-    gameloop::start_loop()
+    let mut game = game::Game::new();
+    game.start_loop()
 }
